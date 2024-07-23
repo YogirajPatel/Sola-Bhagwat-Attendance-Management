@@ -3,13 +3,24 @@ import mongoose from 'mongoose';
 import cors from "cors";
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.js';
+import authRoutes from './routes/auth.js';
 import connectDB from './db.mjs';
+import specs from './swaggerConfig.js';
+import swaggerUi from 'swagger-ui-express';
 const app = express();
 
 dotenv.config();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
+// Route to export Swagger JSON
+app.get('/swagger-json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(specs);
+});
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,7 +34,8 @@ connectDB();
 
 app.use(express.json());
 
-app.use('/api', userRoutes);
+app.use('/users', userRoutes);
+app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
