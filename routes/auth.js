@@ -170,4 +170,52 @@ router.delete('/:email', protect, superAdmin, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         email:
+ *           type: string
+ *         role:
+ *           type: string
+ * 
+ * securitySchemes:
+ *   bearerAuth:
+ *     type: http
+ *     scheme: bearer
+ *     bearerFormat: JWT
+ *
+ * /auth/admins:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Retrieve a list of admin users
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: A list of admin users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       500:
+ *         description: Server error
+ */
+router.get('/admins', protect, superAdmin, async (req, res) => {
+    try {
+        const admins = await User.find({ role: 'admin' }).select('-password');;
+        res.status(200).json({ data: admins });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 export default router;

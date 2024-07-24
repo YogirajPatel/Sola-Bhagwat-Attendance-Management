@@ -12,20 +12,7 @@ const router = express.Router();
  *       type: object
  *       required:
  *         - name
- *         - dob
- *         - gender
  *         - mobile
- *         - address
- *         - samparkKaryakar
- *         - isKaryakar
- *         - karyakarTypesId
- *         - adultMale
- *         - adultFemale
- *         - childMale
- *         - childFemale
- *         - skillIds
- *         - BAPSrelatedInfo
- *         - notes
  *       properties:
  *         name:
  *           type: string
@@ -45,7 +32,7 @@ const router = express.Router();
  *         karyakarTypesId:
  *           type: array
  *           items:
- *             type: string
+ *             type: number
  *         adultMale:
  *           type: number
  *         adultFemale:
@@ -57,11 +44,11 @@ const router = express.Router();
  *         skillIds:
  *           type: array
  *           items:
- *             type: string
+ *             type: number
  *         BAPSrelatedInfo:
  *           type: array
  *           items:
- *             type: string
+ *             type: number
  *         notes:
  *           type: string
  */
@@ -139,6 +126,55 @@ router.get('/', protect, admin, async (req, res) => {
         res.status(200).json(users);
     } catch (err) {
         res.status(400).json({ error: err.message });
+    }
+});
+
+/**
+ * @swagger
+ * /users/search:
+ *   get:
+ *     summary: Search users by name or mobile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The query string to search by name or mobile
+ *     responses:
+ *       200:
+ *         description: A list of users matching the search criteria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request
+ */
+router.get('/search', protect, admin, async (req, res) => {
+    try {
+        console.log(req.query);
+        const { query } = req.query;
+        if (!query) {
+            return res.status(400).json({ error: 'Query parameter is required' });
+        }
+
+        const users = await User.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { mobile: { $regex: query, $options: 'i' } }
+            ]
+        });
+
+        res.status(200).json(users);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: err.message });
     }
 });
 
