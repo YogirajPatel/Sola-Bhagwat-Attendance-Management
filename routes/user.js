@@ -158,7 +158,6 @@ router.get('/', protect, admin, async (req, res) => {
  */
 router.get('/search', protect, admin, async (req, res) => {
     try {
-        console.log(req.query);
         const { query } = req.query;
         if (!query) {
             return res.status(400).json({ error: 'Query parameter is required' });

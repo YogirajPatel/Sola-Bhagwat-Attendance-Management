@@ -4,7 +4,6 @@ import User from '../models/UserLogin.js';
 
 export const protect = async (req, res, next) => {
     let token;
-    console.log(req.headers)
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1];
@@ -26,7 +25,6 @@ export const protect = async (req, res, next) => {
 };
 
 export const admin = (req, res, next) => {
-    console.log(req.user)
     if ((req.user) && (req.user.role === 'admin' || req.user.role === 'superAdmin')) {
         next();
     } else {
