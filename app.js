@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Route to export Swagger JSON
 app.get('/swagger-json', (req, res) => {
